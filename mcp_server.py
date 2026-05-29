@@ -1,4 +1,5 @@
 import asyncio
+import os
 from mcp.server.fastmcp import FastMCP
 
 # 创建 MCP 服务器
@@ -46,4 +47,4 @@ async def adjust_price(float_value: float = 0.05, stickers: list[str] = None) ->
 
 # ---------- 启动 SSE 服务 ----------
 if __name__ == "__main__":
-    mcp.run(transport="sse", host="0.0.0.0", port=8080)
+    mcp.run(transport="sse", port=int(os.environ.get("PORT", 8080)))
