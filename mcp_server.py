@@ -24,4 +24,36 @@ async def steam_price(market_hash_name: str) -> dict:
 @mcp.tool()
 async def buff_supply(market_hash_name: str) -> dict:
     """
-    查询指定饰品在 Buff 上的在售数量和流动性评估（演
+    查询指定饰品在 Buff 上的在售数量和流动性评估（演示用假数据）。
+    参数 market_hash_name：饰品的市场哈希名称
+    """
+    return {"total_count": 12, "liquidity": "低"}
+
+# ---------- 工具3：浮点 & 贴纸溢价 ----------
+@mcp.tool()
+async def adjust_price(float_value: float = 0.05, stickers: list[str] = None) -> dict:
+    """
+    根据皮肤的磨损值和贴纸计算额外溢价。
+    参数 float_value：皮肤的磨损值，0~1，越小越新
+    参数 stickers：贴纸列表，空列表表示无贴纸
+    """
+    stickers = stickers or []
+    float_extra = 0
+    if float_value <= 0.001:
+        float_extra = 15.0
+    elif float_value >= 0.99:
+        float_extra = 20.0
+    sticker_extra = len(stickers) * 2.0
+    return {"float_premium": float_extra, "sticker_premium": sticker_extra}
+
+# ---------- 启动 SSE 服务 ----------
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 8080))
+
+    # 获取 FastMCP 的 ASGI 应用
+    try:
+        app = mcp.sse_app()
+    except AttributeError:
+        app = mcp.app
+
+    uvicorn.run(app, host="0.0.0.0", port=port)
